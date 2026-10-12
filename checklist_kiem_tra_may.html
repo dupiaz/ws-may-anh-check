@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Checklist kiểm tra máy ảnh Fujifilm X-A2 cũ khi mua tại cửa hàng, dùng trên điện thoại.">
+<meta name="theme-color" content="#0f172a">
+<title>Checklist kiểm tra Fujifilm X-A2 cũ</title>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--line:#334155;--text:#f1f5f9;--mute:#94a3b8;--ok:#22c55e;--accent:#38bdf8}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:90px}
+header{position:sticky;top:0;z-index:10;background:rgba(15,23,42,.95);backdrop-filter:blur(8px);padding:12px 16px 10px;border-bottom:1px solid var(--line)}
+h1{font-size:18px;margin:0 0 8px}
+.bar{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--ok));transition:width .25s}
+.stat{font-size:13px;color:var(--mute);margin-top:6px}
+main{padding:12px 12px 0;max-width:640px;margin:auto}
+details{background:var(--card);border-radius:14px;margin-bottom:10px;border:1px solid var(--line);overflow:hidden}
+summary{padding:14px 16px;font-weight:600;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary span{font-size:13px;color:var(--mute);font-weight:500}
+summary.done span{color:var(--ok)}
+label{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-top:1px solid var(--line);cursor:pointer}
+label small{display:block;color:var(--mute);font-size:13px;margin-top:2px}
+input[type=checkbox]{appearance:none;-webkit-appearance:none;flex:none;width:26px;height:26px;border:2px solid var(--mute);border-radius:8px;margin:0;display:grid;place-content:center}
+input[type=checkbox]:checked{background:var(--ok);border-color:var(--ok)}
+input[type=checkbox]:checked::after{content:"✓";color:#052e16;font-weight:800;font-size:18px}
+label:has(input:checked) b{text-decoration:line-through;opacity:.55}
+.warn input:not(:checked){border-color:#f59e0b}
+textarea,input[type=text]{width:100%;background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px;font:inherit}
+.notes{padding:14px 16px;border-top:1px solid var(--line)}
+.notes p{margin:0 0 8px;color:var(--mute);font-size:13px}
+footer{position:fixed;bottom:0;left:0;right:0;padding:12px;background:rgba(15,23,42,.96);border-top:1px solid var(--line);display:flex;gap:10px;justify-content:center}
+button{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:12px 18px;font:inherit;font-weight:600}
+button.p{background:var(--accent);color:#082f49;border:0}
+</style>
+</head>
+<body>
+<header>
+  <h1>📷 Fujifilm X-A2 – Kiểm tra máy cũ</h1>
+  <div class="bar"><i id="bar"></i></div>
+  <div class="stat" id="stat">0/0 mục</div>
+</header>
+<main id="app"></main>
+<footer>
+  <button id="uncheck">Mục còn lại</button>
+  <button id="reset">Làm lại</button>
+</footer>
+
+<script>
+// [tiêu đề, mô tả] — mục có "!" đầu là mục quan trọng (viền cam khi chưa tick)
+const DATA = [
+ ["💬 Trước khi xem máy", [
+  ["!Hỏi bảo hành","3–6 tháng? Ghi rõ trên hóa đơn/phiếu BH"],
+  ["!Bao test / đổi trả 7 ngày","Hỏi điều kiện cụ thể"],
+  ["BH gồm ống kính không?","Loại trừ: rơi vỡ, vào nước, nấm mốc"],
+  ["Máy đã sửa / thay linh kiện chưa?","Hỏi số shot nếu có"],
+  ["Phụ kiện đi kèm","Pin, sạc, dây đeo, thẻ nhớ, hộp"]]],
+ ["🔍 Ngoại hình", [
+  ["Thân máy","Móp, nứt, xước sâu"],
+  ["Ốc vít","Không bị tháo / chờn (dấu hiệu sửa)"],
+  ["Số seri máy khớp hộp","Nếu có hộp"],
+  ["Ngàm lens, tiếp điểm","Không han gỉ, không xước"]]],
+ ["📱 Màn hình lật", [
+  ["!Lật 0–175° nhiều lần","Không chập chờn, không sọc (lỗi cáp màn hình hay gặp)"],
+  ["Không điểm chết","Test nền trắng / đen"],
+  ["Không ám vàng, tối góc",""],
+  ["Bản lề không lỏng",""]]],
+ ["🖼 Cảm biến & ảnh", [
+  ["!Chụp nền trắng f/16","Tháo lens: không bụi/vết bẩn nặng, không điểm chết"],
+  ["Chụp ISO thấp & cao","Không sọc, nhiễu bất thường"],
+  ["Xem lại ảnh trên màn hình","Màu và độ sáng ổn"]]],
+ ["🔭 Ống kính kit 16-50mm", [
+  ["!Vòng zoom, vòng lấy nét","Trơn, không kẹt"],
+  ["!Kính không mốc / rễ tre","Soi đèn pin điện thoại xuyên qua lens"],
+  ["Không trầy, không bụi trong",""],
+  ["Lấy nét ở cả đầu rộng và tele",""],
+  ["OIS hoạt động","Không kêu lạ"]]],
+ ["⚙️ Chức năng", [
+  ["!AF nhanh, chính xác","Kể cả nhận diện mặt/mắt"],
+  ["Flash tích hợp",""],
+  ["Quay video Full HD","Có tiếng"],
+  ["!Wi-Fi","Kết nối app Fujifilm Camera Remote, chuyển ảnh"],
+  ["Nút bấm, bánh xe, nút nguồn, nút chụp",""],
+  ["Khe thẻ nhớ, cổng USB","Đọc/ghi tốt"],
+  ["Pin giữ điện, sạc nhận","Ưu tiên pin chính hãng NP-W126/W126S"],
+  ["Chạy 10–15 phút","Không nóng, không tự tắt"]]],
+ ["🧾 Giấy tờ & thanh toán", [
+  ["!Hóa đơn + phiếu BH","Tên shop, ngày, thời hạn, điều kiện"],
+  ["Ghi lại cấu hình, số seri",""],
+  ["Không cọc khi chưa xem máy",""]]]
+];
+
+const KEY="xa2-checklist-v1", NKEY="xa2-notes-v1";
+let state=JSON.parse(localStorage.getItem(KEY)||"{}");
+const app=document.getElementById("app");
+let total=0;
+
+DATA.forEach((g,gi)=>{
+  const d=document.createElement("details"); d.open=gi===0;
+  const s=document.createElement("summary"); s.innerHTML=`${g[0]} <span></span>`;
+  d.appendChild(s);
+  g[1].forEach((it,ii)=>{
+    total++;
+    const id=`${gi}-${ii}`, warn=it[0][0]==="!", title=warn?it[0].slice(1):it[0];
+    const l=document.createElement("label"); if(warn) l.className="warn";
+    l.innerHTML=`<input type="checkbox" data-id="${id}" ${state[id]?"checked":""}><div><b>${title}</b>${it[1]?`<small>${it[1]}</small>`:""}</div>`;
+    d.appendChild(l);
+  });
+  d.dataset.g=gi; app.appendChild(d);
+});
+
+const n=document.createElement("details");
+n.innerHTML=`<summary>📝 Ghi chú / Giá chốt</summary><div class="notes"><p>Tên shop, giá, tình trạng...</p><textarea id="notes" rows="5"></textarea></div>`;
+app.appendChild(n);
+const ta=n.querySelector("#notes"); ta.value=localStorage.getItem(NKEY)||"";
+ta.oninput=()=>localStorage.setItem(NKEY,ta.value);
+
+function update(){
+  const boxes=[...document.querySelectorAll("input[type=checkbox]")];
+  const done=boxes.filter(b=>b.checked).length;
+  document.getElementById("bar").style.width=(done/total*100)+"%";
+  document.getElementById("stat").textContent=`${done}/${total} mục đã kiểm tra`;
+  document.querySelectorAll("details[data-g]").forEach(d=>{
+    const bs=[...d.querySelectorAll("input")], c=bs.filter(b=>b.checked).length;
+    const s=d.querySelector("summary"); s.querySelector("span").textContent=`${c}/${bs.length}`;
+    s.classList.toggle("done",c===bs.length);
+  });
+}
+app.addEventListener("change",e=>{
+  if(e.target.dataset.id){state[e.target.dataset.id]=e.target.checked;localStorage.setItem(KEY,JSON.stringify(state));update();}
+});
+document.getElementById("reset").onclick=()=>{
+  if(!confirm("Xóa toàn bộ tick và ghi chú?"))return;
+  state={};localStorage.removeItem(KEY);localStorage.removeItem(NKEY);ta.value="";
+  document.querySelectorAll("input[type=checkbox]").forEach(b=>b.checked=false);update();
+};
+document.getElementById("uncheck").onclick=()=>{
+  document.querySelectorAll("details[data-g]").forEach(d=>{d.open=[...d.querySelectorAll("input")].some(b=>!b.checked)});
+  window.scrollTo({top:0,behavior:"smooth"});
+};
+update();
+</script>
+</body>
+</html>
